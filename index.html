@@ -16,7 +16,6 @@
         - Impact Distribution Chart (Chart.js Donut): Goal is a quick visual summary of the key finding (no high/very high impacts). A donut chart is ideal for showing simple proportions.
         - Interactive Sub-Process Table (HTML/JS): Goal is to allow for optional deep-dives. Filtering and expandable rows make the detailed data accessible without overwhelming the user.
         - Justification: This combination presents a high-level summary first, then allows the user to explore details on demand, which is a core principle of good dashboard design for executive audiences. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -46,6 +45,49 @@
             width: 48px;
             height: 48px;
         }
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.125rem; /* text-lg */
+            color: #475569; /* slate-600 */
+        }
     </style>
 </head>
 <body class="text-slate-700">
@@ -60,7 +102,7 @@
         <main>
             <section id="intro" class="mb-16 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
                 <h2 class="text-2xl font-bold text-slate-900 mb-4">Executive Summary</h2>
-                <p class="text-lg mb-6">This report presents the findings of the Business Impact Analysis (BIA) for the Personal Loan process, a key component of our Business Continuity Management (BCM) framework. The analysis concluded that **no sub-processes are classified as 'Critical'** under the current, more stringent methodology. Your approval is now requested to formally accept these findings and conclude this BIA cycle.</p>
+                <p class="text-lg mb-6">This report presents a summary of the Business Impact Analysis (BIA) for Personal Loan process, a key component of our Business Continuity Management (BCM) cycle. Under the current methodology, no sub-processes were classified as 'Critical' (High or Very High impact). Your approval is now requested to formally accept the assessment and conclude the Personal Loan BIA cycle.</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
                     <div class="bg-slate-50 p-4 rounded-lg">
                         <p class="text-3xl font-bold text-indigo-600" id="total-processes">0</p>
@@ -85,8 +127,8 @@
                 <h2 class="text-2xl font-bold text-slate-900 mb-6 text-center">Understanding the BCM Process</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h3 class="font-bold text-lg text-slate-800 mb-3">The BCM Cycle: Where We Are</h3>
-                        <p class="mb-4 text-slate-600">Business Continuity Management (BCM) is our framework for resilience. The BIA is the second, crucial phase where we analyze potential business impacts.</p>
+                        <h3 class="font-bold text-lg text-slate-800 mb-3">BCM Cycle: Where We Are</h3>
+                        <p class="mb-4 text-slate-600">BCM is a framework for developing processes, methodologies, and procedures for creating action plans in response to unforeseen events or major disruptions. BIA is the second phase of BCM cycle, analyzing potential impacts and identifying critical processes, ensuring regulatory compliance.</p>
                         <div class="flex flex-col space-y-2 text-sm">
                             <div class="flex items-center p-3 bg-slate-100 rounded-lg">
                                 <span class="font-bold text-indigo-600 mr-3">1.</span>
@@ -107,23 +149,23 @@
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                         <h3 class="font-bold text-lg text-slate-800 mb-3">How Impacts Are Assessed</h3>
-                        <p class="mb-4 text-slate-600">Product Managers assess each process against four key impact categories if a disruption occurs.</p>
+                        <p class="mb-4 text-slate-600">PMs assess each sub-process against four key impact categories, based on historical metrics and our Materiality Scale. BCO, review the assessments for consistency and adherence to methodology and then, PMs record data in Jira.</p>
                         <div class="space-y-3">
                             <div class="flex items-start">
                                 <div class="icon-box flex-shrink-0 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center mr-4">🤝</div>
-                                <div><strong class="block">Customers:</strong> Impact on service delivery to our clients.</div>
+                                <div><strong class="block">Customers:</strong> Impact on service delivery to our clients due to prolonged system failures or incidents.</div>
                             </div>
                             <div class="flex items-start">
                                 <div class="icon-box flex-shrink-0 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center mr-4">📢</div>
-                                <div><strong class="block">Reputational:</strong> Damage to the Nu brand and market perception.</div>
+                                <div><strong class="block">Reputational:</strong> Damage to the brand and market perception from not responding in time to disruptions.</div>
                             </div>
                             <div class="flex items-start">
                                 <div class="icon-box flex-shrink-0 bg-red-100 text-red-700 rounded-lg flex items-center justify-center mr-4">⚖️</div>
-                                <div><strong class="block">Regulatory:</strong> Risk of fines, sanctions, or increased scrutiny.</div>
+                                <div><strong class="block">Regulatory:</strong> Risk of fines, sanctions, or increased scrutiny from regulators.</div>
                             </div>
                             <div class="flex items-start">
                                 <div class="icon-box flex-shrink-0 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center mr-4">💰</div>
-                                <div><strong class="block">Financial:</strong> Direct expenses or losses affecting our bottom line.</div>
+                                <div><strong class="block">Financial:</strong> Direct expenses or losses affecting Nu's financial statements.</div>
                             </div>
                         </div>
                     </div>
@@ -154,6 +196,7 @@
                                         <th class="p-3">Sub-Process</th>
                                         <th class="p-3 text-center">Impact</th>
                                         <th class="p-3">Assignee</th>
+                                        <th class="p-3">Actions</th> <!-- New column for actions -->
                                     </tr>
                                 </thead>
                                 <tbody id="bia-table-body">
@@ -166,29 +209,29 @@
             </section>
             
             <section id="methodology-change" class="mb-16 bg-indigo-50 border-2 border-dashed border-indigo-200 p-8 rounded-2xl">
-                <h2 class="text-2xl font-bold text-slate-900 mb-4">Key Change: A More Focused Methodology</h2>
-                <p class="mb-6 text-slate-700">This year, we refined our definition of a "Critical Process". This change ensures we focus our most intensive continuity efforts (like OCPs) on risks that are both severe and time-sensitive. This is why results may differ from last year's analysis.</p>
+                <h2 class="text-2xl font-bold text-slate-900 mb-4">Key Change</h2>
+                <p class="mb-6 text-slate-700">This year, the methodology was updated on the definition of a "Critical Process", to ensure focus on risks that are both severe and time-sensitive. This is why results may differ from last year's analysis, where we had critical processes due to a broader methodology.</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="border-l-4 border-slate-300 pl-4">
                         <h4 class="font-semibold text-slate-500">Previous Approach</h4>
                         <p>The criteria for classifying a process as critical were broader and less specific about recovery time.</p>
                     </div>
                     <div class="border-l-4 border-indigo-500 pl-4">
-                        <h4 class="font-semibold text-indigo-700">Current Approach</h4>
-                        <p>A process is only "Critical" if it has a **High or Very High** impact with a recovery time objective (RTO) of **12 hours or less.**</p>
+                        <h4 class="font-semibold text-indigo-700">Current Approach: Critical Process Criteria</h4>
+                        <p>A process is only "Critical" if it has been evaluated with a High or Very High severity in more of the four impact categories.</p>
                     </div>
                 </div>
             </section>
 
             <section id="approval" class="text-center bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
-                <h2 class="text-2xl font-bold text-slate-900 mb-3">Your Approval is Requested</h2>
-                <p class="max-w-3xl mx-auto text-slate-600 mb-6">As the General Manager, your approval formally endorses these findings. This is a mandatory step in our BCM policy, confirming leadership alignment on the assessed impact levels for the Personal Loan process.</p>
+                <h2 class="text-2xl font-bold text-slate-900 mb-3">GM Approval </h2>
+                <p class="max-w-3xl mx-auto text-slate-600 mb-6">Based on the BCM Policy, GM is required to review the Impact analysis, and to formalize the results of the execution, approve BIA (DM will be sent after meeting).</p>
                 <div class="bg-slate-50 p-6 rounded-lg max-w-2xl mx-auto">
                     <h4 class="font-semibold text-slate-800 mb-2">Next Steps</h4>
                     <ul class="list-disc list-inside text-slate-600 text-left space-y-1">
-                        <li>Record and monitor the BIA findings for Personal Loan.</li>
-                        <li>Since no critical processes were identified, no OCP development is required for this cycle.</li>
-                        <li>Continue with the BCM lifecycle for other products and services.</li>
+                        <li>Record the GM approval in JIRA.</li>
+                        <li>Since there's no critical processes, no Operational Continuity Plan (OCP) is required for this cycle.</li>
+                        
                     </ul>
                 </div>
             </section>
@@ -196,24 +239,39 @@
         </main>
     </div>
 
+    <!-- Summary Modal -->
+    <div id="summaryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModalButton">&times;</span>
+            <h3 class="text-xl font-bold text-slate-900 mb-4" id="modalTitle">Summary</h3>
+            <div id="summaryContent" class="text-slate-700 mb-4"></div>
+            <div id="loadingIndicator" class="loading-indicator">Generating summary...</div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Data parsed from your provided Sheet3 content, manually corrected for accuracy
             const biaData = [
                 { "subProcess": "[Contratação do empréstimo] Oferta e Condições", "priority": "Medium", "assignee": "Daniel Veiga", "services": "artemisia, earner, gon, consigliere, wiseguy" },
-                { "subProcess": "[Contratação do empréstimo] Análise de Crédito", "priority": "Medium", "assignee": "Daniel Veiga", "services": "earner, wiseguy" },
-                { "subProcess": "[Contratação do empréstimo] Gerar e enviar contrato", "priority": "Medium", "assignee": "Daniel Veiga", "services": "capo, customers, messaggero, omerta" },
                 { "subProcess": "[Contratação do empréstimo] Simulação", "priority": "Medium", "assignee": "Daniel Veiga", "services": "earner, underboss, corleone-lending, hagen, wiseguy" },
+                { "subProcess": "[Contratação do empréstimo] Análise de Crédito", "priority": "Medium", "assignee": "Daniel Veiga", "services": "earner, wiseguy" },
                 { "subProcess": "[Contratação do empréstimo] Assinatura digital", "priority": "Medium", "assignee": "Daniel Veiga", "services": "artemisia, underboss" },
                 { "subProcess": "[Contratação do empréstimo] Emissão", "priority": "Medium", "assignee": "Daniel Veiga", "services": "N/A" },
+                { "subProcess": "[Contratação do empréstimo] Gerar e enviar contrato", "priority": "Medium", "assignee": "Daniel Veiga", "services": "capo, customers, messaggero, omerta" },
                 { "subProcess": "[Contratação do empréstimo] Análise de Comprovante de Renda", "priority": "Low", "assignee": "Daniel Veiga", "services": "earner, wiseguy" },
                 { "subProcess": "[Contratação do empréstimo] Cancelamento", "priority": "Low", "assignee": "Daniel Veiga", "services": "capo, corleone-lending, mancini" },
                 { "subProcess": "[Renegociação] Simulação", "priority": "Low", "assignee": "Daniel Veiga", "services": "artemisia, capo, consigliere, corleone, corleone-lending, cosa-nostra, financeira-credit-ledger, pentito" },
                 { "subProcess": "[Renegociação] Pagamento da entrada", "priority": "Low", "assignee": "Daniel Veiga", "services": "capo, consigliere, corleone, corleone-lending, cosa-nostra, financeira-credit-ledger, pentito" },
                 { "subProcess": "[Renegociação] Emissão", "priority": "Low", "assignee": "Daniel Veiga", "services": "capo, consigliere, corleone, corleone-lending, cosa-nostra, financeira-credit-ledger, mancini, pentito" },
-                { "subProcess": "[Renegociação] Assinatura digital", "priority": "Low", "assignee": "Daniel Veiga", "services": "artemisia, capo, consigliere, corleone, corleone-lending, cosa-nostra, financeira-credit-ledger, pentito" },
-                { "subProcess": "[Renegociação] Gerar e enviar contrato", "priority": "Low", "assignee": "Daniel Veiga", "services": "capo, consigliere, corleone, corleone-lending, cosa-nostra, financeira-credit-ledger, pentito" },
-                { "subProcess": "[Portabilidade] Oferta", "priority": "Low", "assignee": "Daniel Veiga", "services": "N/A" },
-                { "subProcess": "[Portabilidade] Simulação", "priority": "Low", "assignee": "Daniel Veiga", "services": "N/A" }
+                { "subProcess": "[Renegociação] Assinatura digital", "priority": "Low", "assignee": "Daniel Veiga", "services": "artemisia, capo, corleone, corleone-lle,nding, cosa-nostra, financeira-credit-ledger, pentito" },
+                { "subProcess": "[Renegociação] Gerar e enviar contrato", "priority": "Low", "assignee": "Daniel Veiga", "services": "capo, consigliere, corleone, corleone-lending, cosa-nostra, messaggero, omerta, pentito" },
+                { "subProcess": "[Pagamento via Nuconta] Pagamento automático no vencimento", "priority": "Low", "assignee": "Daniel Veiga", "services": "N/A" },
+                { "subProcess": "[Pagamento via Nuconta] Antecipação", "priority": "Low", "assignee": "Daniel Veiga", "services": "artemisia, brasi, capo, corleone, corleone-lending, cosa-nostra" },
+                { "subProcess": "[Pagamento por boleto] Pagamento no vencimento", "priority": "Low", "assignee": "Daniel Veiga", "services": "Nuconta (Bloqueto), Credit Platform (Corleone), Foundation (Tempo), Infosec (Auth)" },
+                { "subProcess": "[Pagamento por boleto] Antecipação", "priority": "Low", "assignee": "Daniel Veiga", "services": "bloqueto, bonasera, capo, corleone, corleone-lending, cosa-nostra, mancini" },
+                { "subProcess": "[Pagamento via Nuconta] Antecipação - Assinatura digital", "priority": "Low", "assignee": "Daniel Veiga", "services": "artemisia" },
+                { "subProcess": "Portabilidade Out", "priority": "Medium", "assignee": "Daniel Veiga", "services": "capo, corleone, corleone-lending, financeira-portability-client" }
             ];
 
             const tableBody = document.getElementById('bia-table-body');
@@ -246,12 +304,17 @@
                             <span class="px-2 py-1 text-xs font-semibold rounded-full ${priorityClass}">${item.priority}</span>
                         </td>
                         <td class="p-3 text-slate-500">${item.assignee}</td>
+                        <td class="p-3">
+                            <button class="summarize-btn bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-3 rounded-full text-xs">
+                                ✨ Summarize
+                            </button>
+                        </td>
                     `;
                     
                     const detailsRow = document.createElement('tr');
                     detailsRow.className = 'details-row';
                     detailsRow.innerHTML = `
-                        <td colspan="3" class="p-4 bg-slate-50">
+                        <td colspan="4" class="p-4 bg-slate-50"> <!-- Changed colspan to 4 -->
                             <div class="font-semibold text-xs text-slate-500 uppercase mb-2">Critical Services</div>
                             <div class="flex flex-wrap gap-2">
                                 ${item.services.split(/, ?|\n/).filter(s => s.trim() !== '' && s.trim() !== 'N/A').map(s => `<span class="bg-slate-200 text-slate-700 text-xs font-mono px-2 py-1 rounded">${s.trim()}</span>`).join('') || '<span class="text-slate-400 text-sm">No critical services listed.</span>'}
@@ -262,8 +325,16 @@
                     tableBody.appendChild(row);
                     tableBody.appendChild(detailsRow);
 
-                    row.addEventListener('click', () => {
-                        detailsRow.classList.toggle('show');
+                    row.addEventListener('click', (event) => {
+                        // Only toggle details if the summarize button was not clicked
+                        if (!event.target.classList.contains('summarize-btn')) {
+                            detailsRow.classList.toggle('show');
+                        }
+                    });
+
+                    // Add event listener for the summarize button
+                    row.querySelector('.summarize-btn').addEventListener('click', () => {
+                        generateSummary(item);
                     });
                 });
             }
@@ -329,6 +400,89 @@
             });
 
             populateTable();
+
+            // --- Gemini API Integration ---
+            const summaryModal = document.getElementById('summaryModal');
+            const closeModalButton = document.getElementById('closeModalButton');
+            const modalTitle = document.getElementById('modalTitle');
+            const summaryContent = document.getElementById('summaryContent');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+
+            closeModalButton.onclick = function() {
+                summaryModal.style.display = 'none';
+            }
+
+            window.onclick = function(event) {
+                if (event.target == summaryModal) {
+                    summaryModal.style.display = 'none';
+                }
+            }
+
+            async function generateSummary(item) {
+                modalTitle.textContent = `Summary for: ${item.subProcess}`;
+                summaryContent.innerHTML = ''; // Clear previous content
+                loadingIndicator.style.display = 'block'; // Show loading indicator
+                summaryModal.style.display = 'flex'; // Show modal
+
+                const prompt = `Provide a concise, executive-friendly summary for the following business sub-process. Focus on its impact classification, assignee, and critical services/dependencies.
+
+                Sub-Process: ${item.subProcess}
+                Impact Classification: ${item.priority}
+                Assignee: ${item.assignee}
+                Critical Services/Dependencies: ${item.services}
+
+                Ensure the summary is brief and highlights key takeaways for a General Manager.`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // If you want to use models other than gemini-2.5-flash-preview-05-20 or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                let retries = 0;
+                const maxRetries = 5;
+                const baseDelay = 1000; // 1 second
+
+                while (retries < maxRetries) {
+                    try {
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.status === 429) { // Too Many Requests
+                            const delay = baseDelay * Math.pow(2, retries);
+                            retries++;
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            continue; // Retry the request
+                        }
+
+                        const result = await response.json();
+
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const text = result.candidates[0].content.parts[0].text;
+                            summaryContent.innerHTML = text;
+                        } else {
+                            summaryContent.innerHTML = 'Failed to generate summary. Please try again.';
+                        }
+                        break; // Exit loop on success
+                    } catch (error) {
+                        console.error('Error generating summary:', error);
+                        summaryContent.innerHTML = 'An error occurred while fetching the summary.';
+                        break; // Exit loop on critical error
+                    } finally {
+                        loadingIndicator.style.display = 'none'; // Hide loading indicator
+                    }
+                }
+
+                if (retries === maxRetries) {
+                    summaryContent.innerHTML = 'Failed to generate summary after multiple retries. Please try again later.';
+                    loadingIndicator.style.display = 'none';
+                }
+            }
         });
     </script>
 </body>
