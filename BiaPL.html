@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIA Report - Personal Loan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate & Indigo (Calm Harmony) -->
+    <!-- Application Structure Plan: A narrative-driven dashboard guiding the user (GM) from the high-level concept of BCM/BIA to the specific results for Personal Loan. The structure uses sections for context, an interactive dashboard for data exploration, and a clear call-to-action. This is more effective than a raw data table as it builds a story, explains the 'why' behind the data (methodology change), and leads to the desired outcome (informed approval). -->
+    <!-- Visualization & Content Choices: 
+        - BCM Cycle Diagram (HTML/CSS): Goal is to orient the user. A static, styled diagram is clean and effective.
+        - Impact Distribution Chart (Chart.js Donut): Goal is a quick visual summary of the key finding (no high/very high impacts). A donut chart is ideal for showing simple proportions.
+        - Interactive Sub-Process Table (HTML/JS): Goal is to allow for optional deep-dives. Filtering and expandable rows make the detailed data accessible without overwhelming the user.
+        - Justification: This combination presents a high-level summary first, then allows the user to explore details on demand, which is a core principle of good dashboard design for executive audiences. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .details-row {
+            display: none;
+        }
+        .details-row.show {
+            display: table-row;
+        }
+        .icon-box {
+            width: 48px;
+            height: 48px;
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-slate-900">Business Impact Analysis (BIA)</h1>
+            <p class="text-xl text-indigo-600 mt-2 font-medium">Personal Loan Process</p>
+        </header>
+
+        <main>
+            <section id="intro" class="mb-16 bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-900 mb-4">Executive Summary</h2>
+                <p class="text-lg mb-6">This report presents the findings of the Business Impact Analysis (BIA) for the Personal Loan process, a key component of our Business Continuity Management (BCM) framework. The analysis concluded that **no sub-processes are classified as 'Critical'** under the current, more stringent methodology. Your approval is now requested to formally accept these findings and conclude this BIA cycle.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <p class="text-3xl font-bold text-indigo-600" id="total-processes">0</p>
+                        <p class="text-sm font-medium text-slate-500">Total Sub-Processes</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <p class="text-3xl font-bold text-amber-600" id="medium-processes">0</p>
+                        <p class="text-sm font-medium text-slate-500">"Medium" Impact</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <p class="text-3xl font-bold text-sky-600" id="low-processes">0</p>
+                        <p class="text-sm font-medium text-slate-500">"Low" Impact</p>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 p-4 rounded-lg">
+                        <p class="text-3xl font-bold text-red-600">0</p>
+                        <p class="text-sm font-medium text-slate-500">Critical (High/Very High)</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="bcm-context" class="mb-16">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6 text-center">Understanding the BCM Process</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-lg text-slate-800 mb-3">The BCM Cycle: Where We Are</h3>
+                        <p class="mb-4 text-slate-600">Business Continuity Management (BCM) is our framework for resilience. The BIA is the second, crucial phase where we analyze potential business impacts.</p>
+                        <div class="flex flex-col space-y-2 text-sm">
+                            <div class="flex items-center p-3 bg-slate-100 rounded-lg">
+                                <span class="font-bold text-indigo-600 mr-3">1.</span>
+                                <span>Scope Definition</span>
+                                <span class="ml-auto text-slate-500">Done</span>
+                            </div>
+                            <div class="flex items-center p-3 bg-indigo-100 ring-2 ring-indigo-500 rounded-lg">
+                                <span class="font-bold text-indigo-600 mr-3">2.</span>
+                                <span>Business Impact Analysis (BIA)</span>
+                                <span class="ml-auto font-semibold text-indigo-700">You are here</span>
+                            </div>
+                            <div class="flex items-center p-3 bg-slate-100 rounded-lg">
+                                <span class="font-bold text-indigo-600 mr-3">3.</span>
+                                <span>Operational Continuity Plan (OCP)</span>
+                                <span class="ml-auto text-slate-500">Not Required This Cycle</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-lg text-slate-800 mb-3">How Impacts Are Assessed</h3>
+                        <p class="mb-4 text-slate-600">Product Managers assess each process against four key impact categories if a disruption occurs.</p>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <div class="icon-box flex-shrink-0 bg-sky-100 text-sky-700 rounded-lg flex items-center justify-center mr-4">🤝</div>
+                                <div><strong class="block">Customers:</strong> Impact on service delivery to our clients.</div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="icon-box flex-shrink-0 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center mr-4">📢</div>
+                                <div><strong class="block">Reputational:</strong> Damage to the Nu brand and market perception.</div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="icon-box flex-shrink-0 bg-red-100 text-red-700 rounded-lg flex items-center justify-center mr-4">⚖️</div>
+                                <div><strong class="block">Regulatory:</strong> Risk of fines, sanctions, or increased scrutiny.</div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="icon-box flex-shrink-0 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center mr-4">💰</div>
+                                <div><strong class="block">Financial:</strong> Direct expenses or losses affecting our bottom line.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="results" class="mb-16">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6 text-center">Personal Loan: BIA Results</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-lg text-slate-800 mb-2 text-center">Impact Classification</h3>
+                        <p class="text-center text-sm text-slate-500 mb-4">Distribution of impact ratings across all sub-processes.</p>
+                        <div class="chart-container">
+                            <canvas id="impactChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-lg text-slate-800 mb-4">Sub-Process Explorer</h3>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <button id="filter-all" class="filter-btn bg-indigo-600 text-white px-4 py-2 text-sm font-medium rounded-full">All</button>
+                            <button id="filter-medium" class="filter-btn bg-white text-slate-700 border border-slate-300 px-4 py-2 text-sm font-medium rounded-full">Medium Impact</button>
+                            <button id="filter-low" class="filter-btn bg-white text-slate-700 border border-slate-300 px-4 py-2 text-sm font-medium rounded-full">Low Impact</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-slate-50 text-slate-500 uppercase">
+                                    <tr>
+                                        <th class="p-3">Sub-Process</th>
+                                        <th class="p-3 text-center">Impact</th>
+                                        <th class="p-3">Assignee</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bia-table-body">
+                                    <!-- Rows will be injected by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="methodology-change" class="mb-16 bg-indigo-50 border-2 border-dashed border-indigo-200 p-8 rounded-2xl">
+                <h2 class="text-2xl font-bold text-slate-900 mb-4">Key Change: A More Focused Methodology</h2>
+                <p class="mb-6 text-slate-700">This year, we refined our definition of a "Critical Process". This change ensures we focus our most intensive continuity efforts (like OCPs) on risks that are both severe and time-sensitive. This is why results may differ from last year's analysis.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-l-4 border-slate-300 pl-4">
+                        <h4 class="font-semibold text-slate-500">Previous Approach</h4>
+                        <p>The criteria for classifying a process as critical were broader and less specific about recovery time.</p>
+                    </div>
+                    <div class="border-l-4 border-indigo-500 pl-4">
+                        <h4 class="font-semibold text-indigo-700">Current Approach</h4>
+                        <p>A process is only "Critical" if it has a **High or Very High** impact with a recovery time objective (RTO) of **12 hours or less.**</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="approval" class="text-center bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-900 mb-3">Your Approval is Requested</h2>
+                <p class="max-w-3xl mx-auto text-slate-600 mb-6">As the General Manager, your approval formally endorses these findings. This is a mandatory step in our BCM policy, confirming leadership alignment on the assessed impact levels for the Personal Loan process.</p>
+                <div class="bg-slate-50 p-6 rounded-lg max-w-2xl mx-auto">
+                    <h4 class="font-semibold text-slate-800 mb-2">Next Steps</h4>
+                    <ul class="list-disc list-inside text-slate-600 text-left space-y-1">
+                        <li>Record and monitor the BIA findings for Personal Loan.</li>
+                        <li>Since no critical processes were identified, no OCP development is required for this cycle.</li>
+                        <li>Continue with the BCM lifecycle for other products and services.</li>
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const biaData = [
+                { "subProcess": "[Contratação do empréstimo] Oferta e Condições", "priority": "Medium", "assignee": "Daniel Veiga", "services": "artemisia, earner, gon, consigliere, wiseguy" },
+                { "subProcess": "[Contratação do empréstimo] Análise de Crédito", "priority": "Medium", "assignee": "Daniel Veiga", "services": "earner, wiseguy" },
+                { "subProcess": "[Contratação do empréstimo] Gerar e enviar contrato", "priority": "Medium", "assignee": "Daniel Veiga", "services": "capo, customers, messaggero, omerta" },
+                { "subProcess": "[Contratação do empréstimo] Simulação", "priority": "Medium", "assignee": "Daniel Veiga", "services": "earner, underboss, corleone-lending, hagen, wiseguy" },
+                { "subProcess": "[Contratação do empréstimo] Assinatura digital", "priority": "Medium", "assignee": "Daniel Veiga", "services": "artemisia, underboss" },
+                { "subProcess": "[Contratação do empréstimo] Emissão", "priority": "Medium", "assignee": "Daniel Veiga", "services": "N/A" },
+                { "subProcess": "[Contratação do empréstimo] Análise de Comprovante de Renda", "priority": "Low", "assignee": "Daniel Veiga", "services": "earner, wiseguy" },
+                { "subProcess": "[Contratação do empréstimo] Cancelamento", "priority": "Low", "assignee": "Daniel Veiga", "services": "capo, corleone-lending, mancini" },
+                { "subProcess": "[Renegociação] Simulação", "priority": "Low", "assignee": "Daniel Veiga", "services": "artemisia, capo, consigliere, corleone, corleone-lending, cosa-nostra, financeira-credit-ledger, pentito" },
+                { "subProcess": "[Renegociação] Pagamento da entrada", "priority": "Low", "assignee": "Daniel Veiga", "services": "capo, consigliere, corleone, corleone-lending, cosa-nostra, financeira-credit-ledger, pentito" },
+                { "subProcess": "[Renegociação] Emissão", "priority": "Low", "assignee": "Daniel Veiga", "services": "capo, consigliere, corleone, corleone-lending, cosa-nostra, financeira-credit-ledger, mancini, pentito" },
+                { "subProcess": "[Renegociação] Assinatura digital", "priority": "Low", "assignee": "Daniel Veiga", "services": "artemisia, capo, consigliere, corleone, corleone-lending, cosa-nostra, financeira-credit-ledger, pentito" },
+                { "subProcess": "[Renegociação] Gerar e enviar contrato", "priority": "Low", "assignee": "Daniel Veiga", "services": "capo, consigliere, corleone, corleone-lending, cosa-nostra, financeira-credit-ledger, pentito" },
+                { "subProcess": "[Portabilidade] Oferta", "priority": "Low", "assignee": "Daniel Veiga", "services": "N/A" },
+                { "subProcess": "[Portabilidade] Simulação", "priority": "Low", "assignee": "Daniel Veiga", "services": "N/A" }
+            ];
+
+            const tableBody = document.getElementById('bia-table-body');
+            const mediumCount = biaData.filter(d => d.priority === 'Medium').length;
+            const lowCount = biaData.filter(d => d.priority === 'Low').length;
+
+            document.getElementById('total-processes').textContent = biaData.length;
+            document.getElementById('medium-processes').textContent = mediumCount;
+            document.getElementById('low-processes').textContent = lowCount;
+
+            const priorityStyles = {
+                'Medium': 'bg-amber-100 text-amber-800',
+                'Low': 'bg-sky-100 text-sky-800'
+            };
+            
+            function populateTable(filter = 'All') {
+                tableBody.innerHTML = '';
+                const filteredData = biaData.filter(item => filter === 'All' || item.priority === filter);
+
+                filteredData.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-slate-200 hover:bg-slate-50 cursor-pointer';
+                    row.dataset.index = index;
+                    
+                    const priorityClass = priorityStyles[item.priority] || 'bg-slate-100 text-slate-800';
+
+                    row.innerHTML = `
+                        <td class="p-3 font-medium text-slate-900">${item.subProcess}</td>
+                        <td class="p-3 text-center">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full ${priorityClass}">${item.priority}</span>
+                        </td>
+                        <td class="p-3 text-slate-500">${item.assignee}</td>
+                    `;
+                    
+                    const detailsRow = document.createElement('tr');
+                    detailsRow.className = 'details-row';
+                    detailsRow.innerHTML = `
+                        <td colspan="3" class="p-4 bg-slate-50">
+                            <div class="font-semibold text-xs text-slate-500 uppercase mb-2">Critical Services</div>
+                            <div class="flex flex-wrap gap-2">
+                                ${item.services.split(/, ?|\n/).filter(s => s.trim() !== '' && s.trim() !== 'N/A').map(s => `<span class="bg-slate-200 text-slate-700 text-xs font-mono px-2 py-1 rounded">${s.trim()}</span>`).join('') || '<span class="text-slate-400 text-sm">No critical services listed.</span>'}
+                            </div>
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+                    tableBody.appendChild(detailsRow);
+
+                    row.addEventListener('click', () => {
+                        detailsRow.classList.toggle('show');
+                    });
+                });
+            }
+
+            const ctx = document.getElementById('impactChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Medium Impact', 'Low Impact'],
+                    datasets: [{
+                        label: 'Impact Classification',
+                        data: [mediumCount, lowCount],
+                        backgroundColor: [
+                            '#d97706', // amber-600
+                            '#0284c7'  // sky-600
+                        ],
+                        borderColor: '#f8fafc',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14,
+                                }
+                            }
+                        },
+                        tooltip: {
+                            padding: 12,
+                            boxPadding: 4,
+                            titleFont: {
+                                size: 16
+                            },
+                            bodyFont: {
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('bg-indigo-600', 'text-white');
+                        btn.classList.add('bg-white', 'text-slate-700');
+                    });
+                    button.classList.add('bg-indigo-600', 'text-white');
+                    button.classList.remove('bg-white', 'text-slate-700');
+                    
+                    const filterValue = button.id.split('-')[1];
+                    populateTable(filterValue.charAt(0).toUpperCase() + filterValue.slice(1));
+                });
+            });
+
+            populateTable();
+        });
+    </script>
+</body>
+</html>
